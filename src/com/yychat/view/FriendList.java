@@ -25,7 +25,7 @@ public class FriendList extends JFrame {
         myFriendButton1 = new JButton("我的好友");
         friendPanel.add(myFriendButton1,"North");
 
-        myFriendButton1 = new JButton("陌生人");
+        myStrangerButton1 = new JButton("陌生人");
         blackListButton1 = new JButton("黑名单");
 
         //为了容纳myStrangerButton1和blackListButton1，定义一个新JPanel面板
