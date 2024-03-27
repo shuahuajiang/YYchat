@@ -13,17 +13,39 @@ public class FriendList extends JFrame {
     JButton myStrangerButton1;
     JButton blackListButton1;
 
+    JScrollPane friendListScrollPane; //好友列表滚动条面板
+    JPanel friendListPanel;
+    final int MYFRIENDCOUNT = 50;
+    JLabel friendLabel[] = new JLabel[MYFRIENDCOUNT]; //定义好友图标数组
+
     //定义卡片2（陌生人面板）中的组件
     JPanel strangerPanel;
     JButton myFriendButton2;
     JButton myStrangerButton2;
     JButton blackListButton2;
 
+    JScrollPane strangerListScrollPane; //陌生人列表滚动条面板
+    JPanel strangerListPanel;
+    final int STRANGERCOUNT = 20;
+    JLabel strangerLabel[] = new JLabel[STRANGERCOUNT]; //定义陌生人图标数组
+
     public FriendList(){
         //创建卡片1中的组件
         friendPanel = new JPanel(new BorderLayout()); //卡片1设置边界布局模式
         myFriendButton1 = new JButton("我的好友");
         friendPanel.add(myFriendButton1,"North");
+
+        //创建中间的好友列表滚动条面板
+        friendListPanel = new JPanel(new GridLayout(MYFRIENDCOUNT,1)); //50行一列
+        for (int i = 0; i < friendLabel.length; i++) {
+            String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
+            ImageIcon imageIcon = new ImageIcon(imageStr);
+            friendLabel[i] = new JLabel(i + "号好友",imageIcon,JLabel.LEFT);
+            friendListPanel.add(friendLabel[i]);   //好友图标添加到好友列表面板
+        }
+        friendListScrollPane = new JScrollPane(friendListPanel); //创建好友滚动条面板
+        friendPanel.add(friendListScrollPane,"Center");
+
 
         myStrangerButton1 = new JButton("陌生人");
         blackListButton1 = new JButton("黑名单");
@@ -44,6 +66,15 @@ public class FriendList extends JFrame {
         friend_strangerPanel.add(myStrangerButton2);
         strangerPanel.add(friend_strangerPanel,"North");
 
+        //创建中间的陌生人列表滚动条
+        strangerListPanel = new JPanel(new GridLayout(STRANGERCOUNT,1));
+        for (int i = 0; i < strangerLabel.length; i++) {
+            strangerLabel[i] = new JLabel(i+"号陌生人",new ImageIcon("images/tortoise.gif"),JLabel.LEFT);
+            strangerListPanel.add(strangerLabel[i]);
+        }
+        strangerListScrollPane = new JScrollPane(strangerListPanel);
+        strangerPanel.add(strangerListScrollPane,"Center"); //陌生人滚动条添加到卡片2中部
+
         blackListButton2 = new JButton("黑名单");
         strangerPanel.add(blackListButton2,"South");
 
@@ -51,13 +82,14 @@ public class FriendList extends JFrame {
         this.setLayout(cl);
         this.add(friendPanel,"card1");
         this.add(strangerPanel,"card2");
-//        cl.show(this.getContentPane(),"card1");  //在窗体显示卡片1
-        cl.show(this.getContentPane(),"card1");
+       cl.show(this.getContentPane(),"card1");  //在窗体显示卡片1
+//       cl.show(this.getContentPane(),"card1");
 
         this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
         this.setTitle("好友列表");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setBounds(800,600,350,250);
+//        this.setLocationRelativeTo(null);
+        this.setBounds(800,600,350,350);
         this.setVisible(true);
 
     }
