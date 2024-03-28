@@ -2,11 +2,16 @@ package com.yychat.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class StartSever extends JFrame {
+import com.yychat.control.YychatServer;
+
+public class StartSever extends JFrame implements ActionListener {
     JButton jb1,jb2;
     public  StartSever() {
         jb1 = new JButton("启动服务器");
+        jb1.addActionListener(this);  //添加动作监听
         jb1.setFont(new Font("宋体", Font.BOLD, 25));  //设置字体
         jb2 = new JButton("停止服务器");
         jb2.setFont(new Font("宋体", Font.BOLD, 25));
@@ -23,6 +28,10 @@ public class StartSever extends JFrame {
 
     public static void main(String[] args) {
         StartSever ss = new StartSever();
+    }
+    public void actionPerformed(ActionEvent arg0){
+        if (arg0.getSource() == jb1)
+            new YychatServer();
     }
 
 }
