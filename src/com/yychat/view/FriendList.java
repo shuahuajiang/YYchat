@@ -34,7 +34,10 @@ public class FriendList extends JFrame implements ActionListener {
     //实验6— 为了在 actionPerformed（） 中访问 cl，声明为成员变量
     CardLayout cl;
 
-    public FriendList(){
+
+//    修改 FriendList 类的构造方法
+//    public FriendList(){
+    public FriendList(String name){
         //创建卡片1中的组件
         friendPanel = new JPanel(new BorderLayout()); //卡片1设置边界布局模式
         myFriendButton1 = new JButton("我的好友");
@@ -95,7 +98,9 @@ public class FriendList extends JFrame implements ActionListener {
 //       cl.show(this.getContentPane(),"card1");
 
         this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
-        this.setTitle("好友列表");
+        //在好友列表的标题中添加用户名
+        this.setTitle(name + "的好友列表");
+//        this.setTitle("好友列表");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        this.setLocationRelativeTo(null);
         this.setBounds(800,600,350,350);
@@ -104,7 +109,7 @@ public class FriendList extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        FriendList fl = new FriendList();
+//        FriendList fl = new FriendList();    //注释掉创建 FriendList 对象的代码
     }
     //实验6—实现2张卡片的切换， 添加 actionPerformed（） 方法
     public  void actionPerformed(ActionEvent arg0){

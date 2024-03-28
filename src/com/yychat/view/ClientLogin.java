@@ -2,8 +2,10 @@ package com.yychat.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class ClientLogin extends JFrame {
+public class ClientLogin extends JFrame implements ActionListener {
     JLabel jl;  //定义标签组件
     JButton jb1,jb2,jb3;
     JPanel jp;
@@ -48,6 +50,7 @@ public class ClientLogin extends JFrame {
         this.add(jtp,"Center");
 
         jb1 = new JButton(new ImageIcon("images/login.gif")); //图片按钮
+        jb1.addActionListener(this);  //在登录按钮上添加动作监听器
         jb2 = new JButton(new ImageIcon("images/register.gif"));
         jb3 = new JButton(new ImageIcon("images/cancel.gif"));
 
@@ -70,5 +73,13 @@ public class ClientLogin extends JFrame {
 
     public static void main(String[] args) {
         ClientLogin cl = new ClientLogin(); //创建窗体对象
+    }
+    //添加
+    public void actionPerformed(ActionEvent arg0){
+        if (arg0.getSource() == jb1){    //鼠标点击登录按钮
+            String name = jtf.getText(); //获取用户名
+            new FriendList(name);        //创建好友列表界面
+            this.dispose();              //关闭登录界面
+        }
     }
 }
