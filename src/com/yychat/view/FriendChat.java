@@ -10,7 +10,9 @@ public class FriendChat extends JFrame implements ActionListener {
     JScrollPane jsp;
     JTextField jtf;
     JButton jb;
-    public FriendChat(){
+    //增加形参
+//    public FriendChat(){
+    public FriendChat(String oneToAnother){
         jta = new JTextArea();  //多行文本框
         jta.setForeground(Color.red);
         jsp = new JScrollPane(jta);
@@ -25,15 +27,16 @@ public class FriendChat extends JFrame implements ActionListener {
         this.add(jp,"South");
 
         this.setSize(350,250);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);  //点击关闭时退出整个程序
         this.setLocationRelativeTo(null);
-        this.setTitle("聊天界面");
+        this.setTitle(oneToAnother + "的聊天界面");
         this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
         this.setVisible(true);
     }
 
     public static void main(String[] args) {
-        FriendChat fc = new FriendChat();
+//        FriendChat fc = new FriendChat();
     }
     public void actionPerformed(ActionEvent e){
         if (e.getSource() == jb){                    //点击发送按钮

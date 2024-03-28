@@ -6,8 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class FriendList extends JFrame implements ActionListener {
+  //ActionListener , MouseListener 接口
+public class FriendList extends JFrame implements
+          ActionListener,MouseListener {
 
     //定义卡片1（好友面板）中的组件
     JPanel friendPanel;
@@ -34,10 +38,16 @@ public class FriendList extends JFrame implements ActionListener {
     //实验6— 为了在 actionPerformed（） 中访问 cl，声明为成员变量
     CardLayout cl;
 
+//定义成员变量
+      String name;
+
 
 //    修改 FriendList 类的构造方法
 //    public FriendList(){
     public FriendList(String name){
+        //给成员变量 name 赋值
+        this.name = name;
+
         //创建卡片1中的组件
         friendPanel = new JPanel(new BorderLayout()); //卡片1设置边界布局模式
         myFriendButton1 = new JButton("我的好友");
@@ -49,6 +59,11 @@ public class FriendList extends JFrame implements ActionListener {
             String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
             ImageIcon imageIcon = new ImageIcon(imageStr);
             friendLabel[i] = new JLabel(i + "号好友",imageIcon,JLabel.LEFT);
+
+            //在每一个好友图标上添加鼠标监听器
+            friendLabel[i].addMouseListener(this);
+
+
             friendListPanel.add(friendLabel[i]);   //好友图标添加到好友列表面板
         }
         friendListScrollPane = new JScrollPane(friendListPanel); //创建好友滚动条面板
@@ -118,4 +133,23 @@ public class FriendList extends JFrame implements ActionListener {
         if (arg0.getSource() == myStrangerButton1)
             cl.show(this.getContentPane(),"card2");
     }
+    //添加mouselistener 接口中定义的五个方法
+      public void mouseClicked(MouseEvent arg0){
+        if (arg0.getClickCount() == 2){   //双击鼠标时
+            JLabel jl = (JLabel) arg0.getSource();  //获得被双击好友的标签组件
+            String toName = jl.getText();     //拿到好友名字
+            new FriendChat(name + "to" + toName);   //创建好友聊天界面
+        }
+      }
+      public void mouseEntered(MouseEvent arg0){  //进入好友标签组件时
+        JLabel jl = (JLabel) arg0.getSource();
+        jl.setForeground(Color.red);
+      }
+      public void mouseExited(MouseEvent arg0){   //离开好友标签组件时
+          JLabel jl = (JLabel) arg0.getSource();
+          jl.setForeground(Color.blue);
+      }
+      public void mousePressed(MouseEvent arg0){}
+      public void mouseReleased(MouseEvent arg0){}
+
 }
