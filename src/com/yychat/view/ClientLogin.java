@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.yychat.control.YychatClientConnection;
+import com.yychat.model.User;
 
 public class ClientLogin extends JFrame implements ActionListener {
     JLabel jl;  //定义标签组件
@@ -80,9 +81,17 @@ public class ClientLogin extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent arg0){
         if (arg0.getSource() == jb1){    //鼠标点击登录按钮
             String name = jtf.getText(); //获取用户名
+
+            String password = new String(jpf.getPassword()); //获取登录密码
+
+            User user = new User();//创建user类的对象
+            user.setUserName(name);
+            user.setPassword(password);
+
             new FriendList(name);        //创建好友列表界面
             this.dispose();              //关闭登录界面
-            new YychatClientConnection();
+//            new YychatClientConnection();
+            new YychatClientConnection().loginValidate(user);
         }
     }
 }
