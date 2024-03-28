@@ -4,8 +4,10 @@ import sun.applet.Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class FriendList extends JFrame {
+public class FriendList extends JFrame implements ActionListener {
 
     //定义卡片1（好友面板）中的组件
     JPanel friendPanel;
@@ -29,6 +31,9 @@ public class FriendList extends JFrame {
     final int STRANGERCOUNT = 20;
     JLabel strangerLabel[] = new JLabel[STRANGERCOUNT]; //定义陌生人图标数组
 
+    //实验6— 为了在 actionPerformed（） 中访问 cl，声明为成员变量
+    CardLayout cl;
+
     public FriendList(){
         //创建卡片1中的组件
         friendPanel = new JPanel(new BorderLayout()); //卡片1设置边界布局模式
@@ -48,6 +53,7 @@ public class FriendList extends JFrame {
 
 
         myStrangerButton1 = new JButton("陌生人");
+        myStrangerButton1.addActionListener(this); //实验6 在第一张卡片的陌生人按钮上注册动作监听器
         blackListButton1 = new JButton("黑名单");
 
         //为了容纳myStrangerButton1和blackListButton1，定义一个新JPanel面板
@@ -59,6 +65,7 @@ public class FriendList extends JFrame {
         //创建卡片2中的组件
         strangerPanel = new JPanel(new BorderLayout());
         myFriendButton2 = new JButton("我的好友");
+        myFriendButton2.addActionListener(this); //实验6 在第2张卡片的好友按钮上注册动作监听器
         myStrangerButton2 = new JButton("陌生人");
 
         JPanel friend_strangerPanel = new JPanel(new GridLayout(2,1));
@@ -78,7 +85,9 @@ public class FriendList extends JFrame {
         blackListButton2 = new JButton("黑名单");
         strangerPanel.add(blackListButton2,"South");
 
-        CardLayout cl = new CardLayout(); //创建卡片布局
+        //创建卡片布局
+//        CardLayout cl = new CardLayout();   //已经定义过 cl 需注释掉此行
+        cl = new CardLayout();
         this.setLayout(cl);
         this.add(friendPanel,"card1");
         this.add(strangerPanel,"card2");
@@ -96,5 +105,12 @@ public class FriendList extends JFrame {
 
     public static void main(String[] args) {
         FriendList fl = new FriendList();
+    }
+    //实验6—实现2张卡片的切换， 添加 actionPerformed（） 方法
+    public  void actionPerformed(ActionEvent arg0){
+        if (arg0.getSource() == myFriendButton2)
+            cl.show(this.getContentPane(),"card1");
+        if (arg0.getSource() == myStrangerButton1)
+            cl.show(this.getContentPane(),"card2");
     }
 }
