@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.yychat.control.YychatClientConnection;
+
 public class ClientLogin extends JFrame implements ActionListener {
     JLabel jl;  //定义标签组件
     JButton jb1,jb2,jb3;
@@ -80,6 +82,7 @@ public class ClientLogin extends JFrame implements ActionListener {
             String name = jtf.getText(); //获取用户名
             new FriendList(name);        //创建好友列表界面
             this.dispose();              //关闭登录界面
+            new YychatClientConnection();
         }
     }
 }
