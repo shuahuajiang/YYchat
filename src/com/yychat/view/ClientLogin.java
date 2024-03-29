@@ -88,6 +88,14 @@ public class ClientLogin extends JFrame implements ActionListener {
             user.setUserName(name);
             user.setPassword(password);
 
+            if (new YychatClientConnection().loginValidate(user)){
+                new FriendList(name);
+                System.out.println("客户端登录成功");
+                this.dispose();
+            }else {
+                JOptionPane.showMessageDialog(this,"密码错误，重新登录");
+            }
+
             new FriendList(name);        //创建好友列表界面
             this.dispose();              //关闭登录界面
 //            new YychatClientConnection();
