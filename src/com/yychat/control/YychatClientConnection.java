@@ -13,6 +13,7 @@ import  com.yychat.model.User;
 import javax.crypto.interfaces.PBEKey;
 
 import com.yychat.model.Message;
+import com.yychat.view.ClientLogin;
 
 public class YychatClientConnection {
 //    Socket s;
@@ -36,11 +37,13 @@ public class YychatClientConnection {
             ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
             Message mess = (Message) ois.readObject();
 
-            if (mess.getMessageType().equals(MessageType.LOGIN_VALIDATE_SUCCESS))
+            if (mess.getMessageType().equals(MessageType.LOGIN_VALIDATE_SUCCESS)) {
 
-            loginSuccess = true;  //登录验证成功
+                loginSuccess = true;  //登录验证成功
 
-            else
+                new ClientReceiverThread(s).start();  //创建客户端接收线程，用来接收从服务器端发来信息
+
+            }else
                 s.close();
 
         }  catch (IOException e) {
