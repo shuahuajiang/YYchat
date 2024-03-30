@@ -11,6 +11,8 @@ import java.awt.event.MouseListener;
 
 import java.util.HashMap;
 
+import com.yychat.model.Message;
+
   //ActionListener , MouseListener 接口
 public class FriendList extends JFrame implements
           ActionListener,MouseListener {
@@ -62,10 +64,15 @@ public class FriendList extends JFrame implements
         //创建中间的好友列表滚动条面板
         friendListPanel = new JPanel(new GridLayout(MYFRIENDCOUNT,1)); //50行一列
         for (int i = 0; i < friendLabel.length; i++) {
-            String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
+
+//            String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
+
+            String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
             ImageIcon imageIcon = new ImageIcon(imageStr);
-//            friendLabel[i] = new JLabel(i + "号好友",imageIcon,JLabel.LEFT);
             friendLabel[i] = new JLabel(i + "",imageIcon,JLabel.LEFT);
+            if (i != Integer.valueOf(name)) //自己的图标默认是激活的
+                friendLabel[i].setEnabled(false);  //好友图标为非激活
+
 
             //在每一个好友图标上添加鼠标监听器
             friendLabel[i].addMouseListener(this);
@@ -132,6 +139,16 @@ public class FriendList extends JFrame implements
     public static void main(String[] args) {
 //        FriendList fl = new FriendList();    //注释掉创建 FriendList 对象的代码
     }
+
+    //增加激活在线好友图标的方法
+      public void activeOnlineFriendIcon(Message mess){
+        String onlineFriend = mess.getContent();  //拿到在线好友名字的字符串
+        String[] onlineFriendName = onlineFriend.split(" ");//生成在线好友名字的数组
+          for (int i = 1; i < onlineFriendName.length; i++) {
+              this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
+          }
+      }
+
     //实验6—实现2张卡片的切换， 添加 actionPerformed（） 方法
     public  void actionPerformed(ActionEvent arg0){
         if (arg0.getSource() == myFriendButton2)

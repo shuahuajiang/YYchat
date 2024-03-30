@@ -8,7 +8,16 @@ import java.awt.event.ActionListener;
 import com.yychat.control.YychatClientConnection;
 import com.yychat.model.User;
 
+import com.yychat.model.Message;
+import com.yychat.model.MessageType;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
+
 public class ClientLogin extends JFrame implements ActionListener {
+
+    //创建hashmap，用来保存好友列表界面
+    public static HashMap hmFriendList = new HashMap<String,FriendList>();
+
     JLabel jl;  //定义标签组件
     JButton jb1,jb2,jb3;
     JPanel jp;
