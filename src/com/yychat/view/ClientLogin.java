@@ -96,8 +96,8 @@ public class ClientLogin extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this,"密码错误，重新登录");
             }
 
-            new FriendList(name);        //创建好友列表界面
-            this.dispose();              //关闭登录界面
+//            new FriendList(name);        //创建好友列表界面
+//            this.dispose();              //关闭登录界面
 //            new YychatClientConnection();
             new YychatClientConnection().loginValidate(user);
         }

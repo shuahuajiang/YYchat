@@ -15,7 +15,8 @@ import javax.crypto.interfaces.PBEKey;
 import com.yychat.model.Message;
 
 public class YychatClientConnection {
-    Socket s;
+//    Socket s;
+    public static Socket s;  //定义 public static 类型的 socket 对象
     public YychatClientConnection(){
         try {
             s = new Socket("127.0.0.1",3456);  //创建socket对象，和服务器建立连接
@@ -35,9 +36,12 @@ public class YychatClientConnection {
             ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
             Message mess = (Message) ois.readObject();
 
-            if (mess.getMessageType().equals(MessageType.LOGIN_VALIDATE_SUCCESS));
+            if (mess.getMessageType().equals(MessageType.LOGIN_VALIDATE_SUCCESS))
 
             loginSuccess = true;  //登录验证成功
+
+            else
+                s.close();
 
         }  catch (IOException e) {
             e.printStackTrace();

@@ -22,7 +22,7 @@ public class FriendList extends JFrame implements
     JScrollPane friendListScrollPane; //好友列表滚动条面板
     JPanel friendListPanel;
     final int MYFRIENDCOUNT = 50;
-    JLabel friendLabel[] = new JLabel[MYFRIENDCOUNT]; //定义好友图标数组
+    JLabel[]  friendLabel= new JLabel[MYFRIENDCOUNT]; //定义好友图标数组
 
     //定义卡片2（陌生人面板）中的组件
     JPanel strangerPanel;
@@ -33,7 +33,7 @@ public class FriendList extends JFrame implements
     JScrollPane strangerListScrollPane; //陌生人列表滚动条面板
     JPanel strangerListPanel;
     final int STRANGERCOUNT = 20;
-    JLabel strangerLabel[] = new JLabel[STRANGERCOUNT]; //定义陌生人图标数组
+    JLabel[]  strangerLabel= new JLabel[STRANGERCOUNT]; //定义陌生人图标数组
 
     //实验6— 为了在 actionPerformed（） 中访问 cl，声明为成员变量
     CardLayout cl;
@@ -136,9 +136,10 @@ public class FriendList extends JFrame implements
     //添加mouselistener 接口中定义的五个方法
       public void mouseClicked(MouseEvent arg0){
         if (arg0.getClickCount() == 2){   //双击鼠标时
-            JLabel jl = (JLabel) arg0.getSource();  //获得被双击好友的标签组件
+            JLabel jl = (JLabel)arg0.getSource();  //获得被双击好友的标签组件
             String toName = jl.getText();     //拿到好友名字
-            new FriendChat(name + "to" + toName);   //创建好友聊天界面
+//            new FriendChat(name + "to" + toName);   //创建好友聊天界面
+            new FriendChat(name,toName);
         }
       }
       public void mouseEntered(MouseEvent arg0){  //进入好友标签组件时
