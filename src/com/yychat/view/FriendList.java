@@ -178,4 +178,8 @@ public class FriendList extends JFrame implements
       public void mousePressed(MouseEvent arg0){}
       public void mouseReleased(MouseEvent arg0){}
 
+      public void activeNewOnlineFriendIcon (String newonlineFriend){
+        this.friendLabel[Integer.valueOf(newonlineFriend)].setEnabled(true);
+      }
+
 }

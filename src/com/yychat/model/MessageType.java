@@ -7,4 +7,7 @@ public interface MessageType {
 
     String REQUEST_ONLINE_FRIEND = "4";  //客户端请求获得在线好友的名字
     String RESPONSE_ONLINE_FRIEND = "5"; //服务器返回在线好友的名字
+
+    String NEW_ONLINE_TO_ALL_FRIEND = "6";
+    String NEW_ONLINE_FRIEND = "7";
 }

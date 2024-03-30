@@ -5,13 +5,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.sun.xml.internal.ws.resources.SenderMessages;
 import com.yychat.control.YychatClientConnection;
 import com.yychat.model.User;
 
 import com.yychat.model.Message;
 import com.yychat.model.MessageType;
+
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+
+import java.net.Socket;
 
 public class ClientLogin extends JFrame implements ActionListener {
 
@@ -98,8 +103,20 @@ public class ClientLogin extends JFrame implements ActionListener {
             user.setPassword(password);
 
             if (new YychatClientConnection().loginValidate(user)){
-                new FriendList(name);
+                hmFriendList.put(name,new FriendList(name));
                 System.out.println("客户端登录成功");
+
+                Message mess = new Message();
+                mess.setSender(name);
+                mess.setReceiver("Server");
+                mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);
+
+                //使用 sendMessage()方法发送消息
+                sendMessage(YychatClientConnection.s,mess);
+
+                //设置消息类型发送到服务器
+                mess.setMessageType(MessageType.NEW_ONLINE_TO_ALL_FRIEND);
+                sendMessage(YychatClientConnection.s,mess);
                 this.dispose();
             }else {
                 JOptionPane.showMessageDialog(this,"密码错误，重新登录");
@@ -108,7 +125,16 @@ public class ClientLogin extends JFrame implements ActionListener {
 //            new FriendList(name);        //创建好友列表界面
 //            this.dispose();              //关闭登录界面
 //            new YychatClientConnection();
-            new YychatClientConnection().loginValidate(user);
+//            new YychatClientConnection().loginValidate(user);
+        }
+    }
+    public void sendMessage(Socket s,Message mess){
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(s.getOutputStream());
+            oos.writeObject(mess);
+        } catch (IOException e){
+            e.printStackTrace();
         }
     }
 }

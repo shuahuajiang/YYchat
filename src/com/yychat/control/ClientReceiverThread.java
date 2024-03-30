@@ -26,11 +26,18 @@ public class ClientReceiverThread extends Thread{
                     }else
                         System.out.println("请打开"+ receiver +"to"+ sender+ "的聊天界面");
                 }
-                //在客户端接收在线好友的响应消息后激活在线好友图标
-                if (mess.getMessageType().equals(MessageType.LOGIN_VALIDATE_FAILURE)){
-                    //为了拿到接收方的FriendList 对象(好友列表界面)，需要在创建时保存到 Hashmap 对象中
+
+                if (mess.getMessageType().equals(MessageType.REQUEST_ONLINE_FRIEND)){
+                    //为了拿到按收方的FriendList 对象(好友列表界面)，需要在创建时保存到 HashMap 对象
                     FriendList fl = (FriendList) ClientLogin.hmFriendList.get(mess.getReceiver());
                     fl.activeOnlineFriendIcon(mess);
+                }
+                //接收服务器发送来的新上线好友消息
+                if (mess.getMessageType().equals(MessageType.NEW_ONLINE_FRIEND)){
+                    String receiver = mess.getReceiver();  //先拿到receiver的好友列表界面
+                    FriendList fl = (FriendList) ClientLogin.hmFriendList.get(receiver);
+                    String sender = mess.getSender();
+                    fl.activeNewOnlineFriendIcon(sender); //激活新上线好友图标
                 }
 
             } catch (IOException e){

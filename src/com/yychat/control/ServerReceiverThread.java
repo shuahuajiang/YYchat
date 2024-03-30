@@ -26,6 +26,7 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
                 if (mess.getMessageType().equals(MessageType.COMMON_CHAT_MESSAGE)){
                     System.out.println(mess.getSender() + "对" + mess.getReceiver()
                     + "说：" + mess.getContent());
+
 //                  从 hmsocket 中拿到接收方的 socket 对象，然后转发聊天信息
                     String receiver = mess.getReceiver();
                     Socket rs = (Socket) YychatServer.hmSockes.get(receiver);
@@ -49,6 +50,19 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
                     mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);  //设置消息类型
                     mess.setContent(onlineFriend);  //设置消息内容是在线好友的名字
                     sendMessage(s,mess);
+                }
+                //服务器接收信息，通知全部在线用户激活新上线好友图标
+                if (mess.getMessageType().equals(MessageType.NEW_ONLINE_TO_ALL_FRIEND)){
+                    mess.setMessageType(MessageType.NEW_ONLINE_FRIEND);
+                    Set onlineFriendSet = YychatServer.hmSockes.keySet(); //拿到在线好友名字的集合
+                    Iterator it = onlineFriendSet.iterator();
+                    while (it.hasNext()){    //循环中依次给全部在线好友发送信息
+                        String receiver = (String) it.next();  //接收信息的用户
+                        mess.setReceiver(receiver);
+                        //拿到接收信息用户的Socket对象
+                        Socket rs = (Socket) YychatServer.hmSockes.get(receiver);
+                        sendMessage(rs,mess);  //告诉receiver用户，sender上线了，激活sender图标
+                    }
                 }
             } catch (ClassNotFoundException | IOException e ){
                 e.printStackTrace();
