@@ -10,4 +10,7 @@ public interface MessageType {
 
     String NEW_ONLINE_TO_ALL_FRIEND = "6";
     String NEW_ONLINE_FRIEND = "7";
+
+    String USER_REGISTER_SUCCESS = "8";
+    String USER_REGISTER_FAILURE = "9";
 }

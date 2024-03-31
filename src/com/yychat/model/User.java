@@ -5,6 +5,14 @@ import java.io.Serializable;
 public class User implements Serializable {   //必须实现 Serializable 接口，否则不能再网络上传输User类的对象
     String userName;
     String password;
+    String userType;
+
+    public String getUserType(){
+        return userType;
+    }
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
     public String getUserName(){
         return userName;
     }

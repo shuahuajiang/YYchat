@@ -26,6 +26,31 @@ public class YychatClientConnection {
             e.printStackTrace();
         }
     }
+    //新增registerUser（）方法
+    public static boolean registerUser(User user) {
+        boolean registerSuccess = false;
+        //发送 user 对象
+        try {
+            OutputStream os = s.getOutputStream();  //通过 Socket 获得字节输出流对象
+            ObjectOutputStream oos = new ObjectOutputStream(os);  //把字节输出流包装成对象输出流对象
+            oos.writeObject(user);//向服务器端发送user对象
+
+            ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+            Message mess = (Message) ois.readObject();   //接收服务器端发送的Message 对象
+
+            if (mess.getMessageType().equals(MessageType.USER_REGISTER_SUCCESS)) {
+                registerSuccess = true;//注册成功
+            }
+            s.close(); //不管注册是否成功。都要关闭客户端的Socket对象}catch(IoException e){
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return registerSuccess;
+    }
+
+
 //    public void loginValidate(User user){
     public  boolean loginValidate(User user){   //客户端接收Message对象，成功则返回ture
         boolean loginSuccess = false;   //默认登录失败

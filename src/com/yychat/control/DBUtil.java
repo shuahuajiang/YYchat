@@ -24,6 +24,38 @@ public class DBUtil {
         }
         return conn;
     }
+
+    //注册新用户到 use= 表中，增加査询用户的方法
+    public static boolean seekUser(String userName){
+        boolean seekSuccess = false;
+        String user_query_str= "select * from user where username=?";
+        PreparedStatement psmt;
+        try {
+            psmt= conn.prepareStatement(user_query_str);
+            psmt.setString(1,userName);
+            ResultSet rs = psmt.executeQuery();
+            seekSuccess = rs.next();  //有同名用户返回true
+        }  catch(SQLException e) {
+            e.printStackTrace();
+        } return seekSuccess;
+    }
+
+    //增加在user表中插入新用户的方法
+    public static int insertIntoUser(String userName,String password) {
+        int count = 0;
+        String user_inset_into_str = "insert into user(username,password) values(?,?)";
+        PreparedStatement psmt;
+        try {
+            psmt = conn.prepareStatement(user_inset_into_str);
+            psmt.setString(1, userName);
+            psmt.setString(2, password);
+            count = psmt.executeUpdate();  //返国成功插入的记录数目
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
     public static boolean loginValidate(String userName,String password){
         boolean loginSuccess = false;
         String user_query_str = "select * from user where username=? and password=?";

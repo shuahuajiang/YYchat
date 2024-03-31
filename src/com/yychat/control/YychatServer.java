@@ -9,6 +9,8 @@ import com.yychat.model.MessageType;
 import com.yychat.model.User;
 
 import com.yychat.model.Message;
+import com.yychat.model.UserType;
+
 import java.io.ObjectOutputStream;
 
 import java.util.HashMap; //导入HashMap类
@@ -40,7 +42,9 @@ public class YychatServer {
                 String password = user.getPassword();
                 System.out.println(userName + "连接成功：" + s);
                 System.out.println("服务器端收到客户端登录信息userName：" + userName + "password:" + password);
-
+                //创建对象输出流对象
+                ObjectOutputStream  oos = new ObjectOutputStream(s.getOutputStream());
+                Message mess = new Message();
 
 /*              对数据库代码封装，注释掉数据库相关代码
 
@@ -70,34 +74,46 @@ public class YychatServer {
                     e.printStackTrace();
                 }                                           */
 
-
-//              调用 loginValidate（） 方法来完成数据库的用户登录验证
-                boolean loginSuccess = DBUtil.loginValidate(userName,password);
-
-                //创建对象输出流对象
-                ObjectOutputStream  oos = new ObjectOutputStream(s.getOutputStream());
-                Message mess = new Message();
-                //利用 loginSuccess 修改登录验证代码
-//                if (password.equals("123456")){
-                if (loginSuccess){
-                    System.out.println("密码验证通过");
-                    mess.setMessageType(MessageType.LOGIN_VALIDATE_SUCCESS);
-                    oos.writeObject(mess);  //发送mess对象到客户端
-
-                    hmSockes.put(userName,s);  //保存登录成功的新用户名和 socket 对象类
-
-                    /*用户登陆成功后，服务器为每一个用户创建服务线程，
-                    由于可能有多个客户同时向服务器发送信息,需要为每一个用户创建接收线程*/
-                    new ServerReceiverThread(s).start(); //启动线程
-                    System.out.println("启动线程成功");
-                }else {
-                    System.out.println("密码验证失败");
-                    mess.setMessageType(MessageType.LOGIN_VALIDATE_FAILURE);//登录验证失败
+                //在服务器的YychatServer类中新增注册用户代码
+                if (user.getUserType().equals(UserType.USER_REGISTER)){
+                    //调用seek方法，在user表中查询是否有同名用户
+                    if (DBUtil.seekUser(userName)){  //有同名用户不能注册
+                        mess.setMessageType(MessageType.USER_REGISTER_FAILURE);  //设置消息类型
+                    }else {
+                        DBUtil.insertIntoUser(userName,password);  //在user表中注册新用户
+                        mess.setMessageType(MessageType.USER_REGISTER_SUCCESS);
+                    }
                     oos.writeObject(mess);  //发送mess对象到客户端
                     s.close();
                 }
 
+                //把登录验证的代码放到if语句中
+                if (user.getUserType().equals(UserType.USER_LOGIN_VALIDATE)) { //用户登录验证
 
+//              调用 loginValidate（） 方法来完成数据库的用户登录验证
+                    boolean loginSuccess = DBUtil.loginValidate(userName, password);
+
+
+                    //利用 loginSuccess 修改登录验证代码
+//                if (password.equals("123456")){
+                    if (loginSuccess) {
+                        System.out.println("密码验证通过");
+                        mess.setMessageType(MessageType.LOGIN_VALIDATE_SUCCESS);
+                        oos.writeObject(mess);  //发送mess对象到客户端
+
+                        hmSockes.put(userName, s);  //保存登录成功的新用户名和 socket 对象类
+
+                    /*用户登陆成功后，服务器为每一个用户创建服务线程，
+                    由于可能有多个客户同时向服务器发送信息,需要为每一个用户创建接收线程*/
+                        new ServerReceiverThread(s).start(); //启动线程
+                        System.out.println("启动线程成功");
+                    } else {
+                        System.out.println("密码验证失败");
+                        mess.setMessageType(MessageType.LOGIN_VALIDATE_FAILURE);//登录验证失败
+                        oos.writeObject(mess);  //发送mess对象到客户端
+                        s.close();
+                    }
+                }
 //                ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 //                oos.writeObject(mess);
             }

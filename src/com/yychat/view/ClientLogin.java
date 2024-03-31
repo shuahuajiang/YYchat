@@ -11,6 +11,7 @@ import com.yychat.model.User;
 
 import com.yychat.model.Message;
 import com.yychat.model.MessageType;
+import com.yychat.model.UserType;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -68,7 +69,11 @@ public class ClientLogin extends JFrame implements ActionListener {
 
         jb1 = new JButton(new ImageIcon("images/login.gif")); //图片按钮
         jb1.addActionListener(this);  //在登录按钮上添加动作监听器
+
+        //在注册按钮上添加动作事件的监听器对象
         jb2 = new JButton(new ImageIcon("images/register.gif"));
+        jb2.addActionListener(this);
+
         jb3 = new JButton(new ImageIcon("images/cancel.gif"));
 
         jp = new JPanel(); //创建面板对象
@@ -78,13 +83,13 @@ public class ClientLogin extends JFrame implements ActionListener {
         this.add(jp,"South"); //JPanel组件添加到窗体南部
 
         Image im = new ImageIcon("images/duck2.gif").getImage(); //创建image对象
+        this.setIconImage(im);  //窗体左上角图标
 
 //        this.setBounds(800,600,350,250);  //设置窗体边界（位置和大小）
         this.setLocationRelativeTo(null);
         this.setSize(350,250); //窗体大小
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //点击窗体关闭按钮
         this.setTitle("YY聊天");
-
         this.setVisible(true); //窗体可视
     }
 
@@ -93,14 +98,27 @@ public class ClientLogin extends JFrame implements ActionListener {
     }
     //添加
     public void actionPerformed(ActionEvent arg0){
-        if (arg0.getSource() == jb1){    //鼠标点击登录按钮
-            String name = jtf.getText(); //获取用户名
+        //判断ActionEvent事件来源，调用注册方法来发送user对象
+//        if (arg0.getSource() == jb1){    //鼠标点击登录按钮
 
+            String name = jtf.getText(); //获取用户名
             String password = new String(jpf.getPassword()); //获取登录密码
 
             User user = new User();//创建user类的对象
             user.setUserName(name);
             user.setPassword(password);
+            //响应注册事件
+            if (arg0.getSource() == jb2) {
+                user.setUserType(UserType.USER_REGISTER); //设置user对象
+                if (new YychatClientConnection().registerUser(user)) {
+                    JOptionPane.showMessageDialog(this, name + "用户注册成功");
+                } else {
+                    JOptionPane.showMessageDialog(this, name + "用户名重复，请重新注册");
+                }
+            }
+//          注册新用户，修改部分登录代码
+        if (arg0.getSource() == jb1){
+            user.setUserType(UserType.USER_LOGIN_VALIDATE);
 
             if (new YychatClientConnection().loginValidate(user)){
                 hmFriendList.put(name,new FriendList(name));
