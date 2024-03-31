@@ -41,6 +41,9 @@ public class YychatServer {
                 System.out.println(userName + "连接成功：" + s);
                 System.out.println("服务器端收到客户端登录信息userName：" + userName + "password:" + password);
 
+
+/*              对数据库代码封装，注释掉数据库相关代码
+
                 //在项目中加载驱动程序
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 //生成数据库连接对象
@@ -49,7 +52,7 @@ public class YychatServer {
                         "true&characterEncoding=utf-8"; //支持数据库中文数据
 
                 String db_username = "root";
-                String db_password = "JHJjhj20030418";
+                String db_password = "JHJjhj20030418"; //注意是本地设置的密码
                 Connection conn;
 
                 boolean loginSuccess = false;  //增加登录验证变量
@@ -65,8 +68,11 @@ public class YychatServer {
                     loginSuccess = rs.next();
                 } catch (SQLException e){
                     e.printStackTrace();
-                }
+                }                                           */
 
+
+//              调用 loginValidate（） 方法来完成数据库的用户登录验证
+                boolean loginSuccess = DBUtil.loginValidate(userName,password);
 
                 //创建对象输出流对象
                 ObjectOutputStream  oos = new ObjectOutputStream(s.getOutputStream());
