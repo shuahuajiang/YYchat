@@ -70,7 +70,8 @@ public class FriendList extends JFrame implements
             String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
             ImageIcon imageIcon = new ImageIcon(imageStr);
             friendLabel[i] = new JLabel(i + "",imageIcon,JLabel.LEFT);
-            if (i != Integer.valueOf(name)) //自己的图标默认是激活的
+
+//            if (i != Integer.valueOf(name)) //自己的图标默认是激活的
                 friendLabel[i].setEnabled(false);  //好友图标为非激活
 
 
@@ -145,7 +146,7 @@ public class FriendList extends JFrame implements
         String onlineFriend = mess.getContent();  //拿到在线好友名字的字符串
         String[] onlineFriendName = onlineFriend.split(" ");//生成在线好友名字的数组
           for (int i = 1; i < onlineFriendName.length; i++) {
-              this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
+//              this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
           }
       }
 
@@ -179,7 +180,7 @@ public class FriendList extends JFrame implements
       public void mouseReleased(MouseEvent arg0){}
 
       public void activeNewOnlineFriendIcon (String newonlineFriend){
-        this.friendLabel[Integer.valueOf(newonlineFriend)].setEnabled(true);
+//        this.friendLabel[Integer.valueOf(newonlineFriend)].setEnabled(true);
       }
 
 }

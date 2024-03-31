@@ -13,6 +13,13 @@ import java.io.ObjectOutputStream;
 
 import java.util.HashMap; //导入HashMap类
 
+//导入 数据库 相关类
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class YychatServer {
 //    定义HashMap对象来保存用户名和队友的server端socket对象
     public static HashMap hmSockes = new HashMap<String,Socket>();
@@ -34,10 +41,39 @@ public class YychatServer {
                 System.out.println(userName + "连接成功：" + s);
                 System.out.println("服务器端收到客户端登录信息userName：" + userName + "password:" + password);
 
+                //在项目中加载驱动程序
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                //生成数据库连接对象
+                //  jdbc:mysql://127.0.0.1:3306/yychat2022s  只支持英文
+                String db_url = "jdbc:mysql://127.0.0.1:3306/yychat2022s?useUnicode=" +
+                        "true&characterEncoding=utf-8"; //支持数据库中文数据
+
+                String db_username = "root";
+                String db_password = "JHJjhj20030418";
+                Connection conn;
+
+                boolean loginSuccess = false;  //增加登录验证变量
+                try {
+                    conn = DriverManager.getConnection(db_url,db_username,db_password);
+                    //查询user表，生成结果集
+                    String user_query_str = "select * from user where username=? and password=?";
+                    PreparedStatement psmt = conn.prepareStatement(user_query_str);
+                    psmt.setString(1,userName);
+                    psmt.setString(2,password);
+                    ResultSet rs = psmt.executeQuery();
+                    //loginsucces为true，表明在user表中查询到记录，否则为false
+                    loginSuccess = rs.next();
+                } catch (SQLException e){
+                    e.printStackTrace();
+                }
+
+
                 //创建对象输出流对象
                 ObjectOutputStream  oos = new ObjectOutputStream(s.getOutputStream());
                 Message mess = new Message();
-                if (password.equals("123456")){
+                //利用 loginSuccess 修改登录验证代码
+//                if (password.equals("123456")){
+                if (loginSuccess){
                     System.out.println("密码验证通过");
                     mess.setMessageType(MessageType.LOGIN_VALIDATE_SUCCESS);
                     oos.writeObject(mess);  //发送mess对象到客户端
