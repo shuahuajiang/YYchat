@@ -98,6 +98,10 @@ public class YychatServer {
 //                if (password.equals("123456")){
                     if (loginSuccess) {
                         System.out.println("密码验证通过");
+                        //通过后拿到数据库中全部好友名字
+                        String allFriend = DBUtil.seekAllFriend(userName,1);
+                        mess.setContent(allFriend);
+
                         mess.setMessageType(MessageType.LOGIN_VALIDATE_SUCCESS);
                         oos.writeObject(mess);  //发送mess对象到客户端
 

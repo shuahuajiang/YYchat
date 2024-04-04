@@ -73,4 +73,23 @@ public class DBUtil {
         }
         return loginSuccess;
     }
+
+    public static String seekAllFriend(String userName,int FriendType) {
+        String allFriend = "";
+        String userrelation_query_str = "select slaveuser from userrelation where masteruser=? and relation=?";
+
+        PreparedStatement psmt;
+        try {
+            psmt = conn.prepareStatement(userrelation_query_str);
+            psmt.setString(1, userName);
+            psmt.setInt(2, FriendType);
+            ResultSet rs = psmt.executeQuery();
+            while (rs.next())
+                allFriend = allFriend + " " + rs.getString(1);
+            System.out.println(userName + "全部好友:" + allFriend);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return allFriend;
+    }
 }

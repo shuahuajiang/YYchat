@@ -52,7 +52,8 @@ public class FriendList extends JFrame implements
 
 //    修改 FriendList 类的构造方法
 //    public FriendList(){
-    public FriendList(String name){
+//    public FriendList(String name){
+public FriendList(String name,String allFriend){
         //给成员变量 name 赋值
         this.name = name;
 
@@ -61,25 +62,35 @@ public class FriendList extends JFrame implements
         myFriendButton1 = new JButton("我的好友");
         friendPanel.add(myFriendButton1,"North");
 
-        //创建中间的好友列表滚动条面板
-        friendListPanel = new JPanel(new GridLayout(MYFRIENDCOUNT,1)); //50行一列
-        for (int i = 0; i < friendLabel.length; i++) {
+        //修改卡片1中添加好友图标的代码
+    String[] myFriend = allFriend.split(" ");
+    friendListPanel = new JPanel(new GridLayout(myFriend.length-1,1));
+    for (int i = 1; i < myFriend.length; i++) {
+        String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
+        ImageIcon imageIcon = new ImageIcon(imageStr);
+        friendLabel[i] = new JLabel(myFriend[i] + "",imageIcon,JLabel.LEFT);
+        friendListPanel.add(friendLabel[i]);
+    }
 
-//            String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
-
-            String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
-            ImageIcon imageIcon = new ImageIcon(imageStr);
-            friendLabel[i] = new JLabel(i + "",imageIcon,JLabel.LEFT);
-
-//            if (i != Integer.valueOf(name)) //自己的图标默认是激活的
-                friendLabel[i].setEnabled(false);  //好友图标为非激活
-
-
-            //在每一个好友图标上添加鼠标监听器
-            friendLabel[i].addMouseListener(this);
-
-            friendListPanel.add(friendLabel[i]);   //好友图标添加到好友列表面板
-        }
+//        //创建中间的好友列表滚动条面板
+//        friendListPanel = new JPanel(new GridLayout(MYFRIENDCOUNT,1)); //50行一列
+//        for (int i = 0; i < friendLabel.length; i++) {
+//
+////            String imageStr = "images/" + (int)(Math.random()*6) + ".jpg"; //随机生成图片路径
+//
+//            String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
+//            ImageIcon imageIcon = new ImageIcon(imageStr);
+//            friendLabel[i] = new JLabel(i + "",imageIcon,JLabel.LEFT);
+//
+////            if (i != Integer.valueOf(name)) //自己的图标默认是激活的
+//                friendLabel[i].setEnabled(false);  //好友图标为非激活
+//
+//
+//            //在每一个好友图标上添加鼠标监听器
+//            friendLabel[i].addMouseListener(this);
+//
+//            friendListPanel.add(friendLabel[i]);   //好友图标添加到好友列表面板
+//        }
         friendListScrollPane = new JScrollPane(friendListPanel); //创建好友滚动条面板
         friendPanel.add(friendListScrollPane,"Center");
 
@@ -123,7 +134,7 @@ public class FriendList extends JFrame implements
         this.setLayout(cl);
         this.add(friendPanel,"card1");
         this.add(strangerPanel,"card2");
-       cl.show(this.getContentPane(),"card1");  //在窗体显示卡片1
+//       cl.show(this.getContentPane(),"card1");  //在窗体显示卡片1
 //       cl.show(this.getContentPane(),"card1");
 
         this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
