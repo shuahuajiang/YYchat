@@ -13,4 +13,13 @@ public interface MessageType {
 
     String USER_REGISTER_SUCCESS = "8";
     String USER_REGISTER_FAILURE = "9";
+
+    String ADD_NEW_FRIEND = "10"; //客户端发送到服务器的请求添加好友消息
+
+    String ADD_NEW_FRIEND_FAILURE_NO_USER = "11";  //添加好友失败
+    String ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND = "12";//添加失败（已经是好友了）
+    String ADD_NEW_FRIEND_SUCCESS = "13"; //添加成功
+
+    String USER_EXIT_SERVER_THREAD_CLOSE = "14";
+    String USER_EXIT_CLIENT_THREAD_CLOSE = "15";
 }

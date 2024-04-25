@@ -1,25 +1,26 @@
 package com.yychat.view;
 
-import sun.applet.Main;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
+import java.awt.event.*;
 import java.util.HashMap;
-
 import com.yychat.model.Message;
 
+import com.yychat.control.YychatClientConnection;
+import com.yychat.model.MessageType;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+
+//退出后关闭线程
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+
+//用户退出后关闭线程，实现 WindowListener 接口
   //ActionListener , MouseListener 接口
 public class FriendList extends JFrame implements
-          ActionListener,MouseListener {
-
+          ActionListener,MouseListener,WindowListener {
      //定义HashMap 对象，用来保存 name+toname 和好友聊天界面
      public static HashMap<String,FriendChat>hmFriendChat = new HashMap<String,FriendChat>();
-
 
     //定义卡片1（好友面板）中的组件
     JPanel friendPanel;
@@ -29,7 +30,7 @@ public class FriendList extends JFrame implements
 
     JScrollPane friendListScrollPane; //好友列表滚动条面板
     JPanel friendListPanel;
-    final int MYFRIENDCOUNT = 50;
+    final int MYFRIENDCOUNT = 50;   //50个好友
     JLabel[]  friendLabel= new JLabel[MYFRIENDCOUNT]; //定义好友图标数组
 
     //定义卡片2（陌生人面板）中的组件
@@ -40,7 +41,7 @@ public class FriendList extends JFrame implements
 
     JScrollPane strangerListScrollPane; //陌生人列表滚动条面板
     JPanel strangerListPanel;
-    final int STRANGERCOUNT = 20;
+    final int STRANGERCOUNT = 20;  //20个陌生人
     JLabel[]  strangerLabel= new JLabel[STRANGERCOUNT]; //定义陌生人图标数组
 
     //实验6— 为了在 actionPerformed（） 中访问 cl，声明为成员变量
@@ -48,6 +49,10 @@ public class FriendList extends JFrame implements
 
 //定义成员变量
       String name;
+
+      //定义添加好友面板和按钮
+      JPanel addFriendJPanel;
+      JButton addFriendButton;
 
 
 //    修改 FriendList 类的构造方法
@@ -59,18 +64,29 @@ public FriendList(String name,String allFriend){
 
         //创建卡片1中的组件
         friendPanel = new JPanel(new BorderLayout()); //卡片1设置边界布局模式
+
+    //创建添加好友面板和按钮并注册监听器
+    addFriendJPanel = new JPanel(new GridLayout(2,1));
+    addFriendButton = new JButton("添加好友");
+    addFriendButton.addActionListener(this);  //在添加好友按钮上注册监听器
         myFriendButton1 = new JButton("我的好友");
-        friendPanel.add(myFriendButton1,"North");
+    addFriendJPanel.add(addFriendButton);
+    addFriendJPanel.add(myFriendButton1);
+        friendPanel.add(addFriendJPanel,"North");//把添加好友面板放到卡片1的北部
+
+    //调用showAllFriend 方法，并注释掉添加好友图标的代码
+    friendListPanel = new JPanel();
+    showAllFriend(allFriend);
 
         //修改卡片1中添加好友图标的代码
-    String[] myFriend = allFriend.split(" ");
-    friendListPanel = new JPanel(new GridLayout(myFriend.length-1,1));
-    for (int i = 1; i < myFriend.length; i++) {
-        String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
-        ImageIcon imageIcon = new ImageIcon(imageStr);
-        friendLabel[i] = new JLabel(myFriend[i] + "",imageIcon,JLabel.LEFT);
-        friendListPanel.add(friendLabel[i]);
-    }
+//    String[] myFriend = allFriend.split(" ");
+//    friendListPanel = new JPanel(new GridLayout(myFriend.length-1,1));
+//    for (int i = 1; i < myFriend.length; i++) {
+//        String imageStr = "images/" + i%6 + ".jpg";  //好友图标使用固定的图片
+//        ImageIcon imageIcon = new ImageIcon(imageStr);
+//        friendLabel[i] = new JLabel(myFriend[i] + "",imageIcon,JLabel.LEFT);
+//        friendListPanel.add(friendLabel[i]);
+//    }
 
 //        //创建中间的好友列表滚动条面板
 //        friendListPanel = new JPanel(new GridLayout(MYFRIENDCOUNT,1)); //50行一列
@@ -140,9 +156,14 @@ public FriendList(String name,String allFriend){
         this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
         //在好友列表的标题中添加用户名
         this.setTitle(name + "的好友列表");
+
+        //退出时关闭线程，注释掉点击关闭按钮时退出程序的代码，同时注册监听器
+
 //        this.setTitle("好友列表");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        this.setLocationRelativeTo(null);
+        this.addWindowListener(this);
+
         this.setBounds(800,600,350,350);
         this.setVisible(true);
 
@@ -151,6 +172,21 @@ public FriendList(String name,String allFriend){
     public static void main(String[] args) {
 //        FriendList fl = new FriendList();    //注释掉创建 FriendList 对象的代码
     }
+
+    //增加showAllFriend（）方法
+      public void showAllFriend(String allFriend){
+    String[] myFriend = allFriend.split(" ");
+    friendListPanel.removeAll(); //在好友列表面板中移去全部组件
+          friendListPanel.setLayout(new GridLayout(myFriend.length-1,1));
+          for (int i = 1; i < myFriend.length; i++) {
+              String imageStr = "image/" + i%6 + ".jpg";
+              ImageIcon imageIcon = new ImageIcon(imageStr);
+              friendLabel[i] = new JLabel(myFriend[i] + "",imageIcon,JLabel.LEFT);
+              friendLabel[i].addMouseListener(this);  //注册监听器对象
+              friendListPanel.add(friendLabel[i]);
+          }
+          friendListPanel.revalidate(); //让好友面板重新生效
+      }
 
     //增加激活在线好友图标的方法
       public void activeOnlineFriendIcon(Message mess){
@@ -163,6 +199,26 @@ public FriendList(String name,String allFriend){
 
     //实验6—实现2张卡片的切换， 添加 actionPerformed（） 方法
     public  void actionPerformed(ActionEvent arg0){
+
+    //输入新好友名字，发送到服务器端
+        if (arg0.getSource() == addFriendButton){
+            String newFriend = JOptionPane.showInputDialog("请输入新好友的名字");
+            System.out.println("newFriend" + newFriend);
+            if (newFriend != null){
+                Message mess = new Message();
+                mess.setSender(name);
+                mess.setReceiver("Server");
+                mess.setContent(newFriend);
+                mess.setMessageType(MessageType.ADD_NEW_FRIEND);
+                try {
+                    ObjectOutputStream oos = new ObjectOutputStream(YychatClientConnection.s.getOutputStream());
+                    oos.writeObject(mess);
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
         if (arg0.getSource() == myFriendButton2)
             cl.show(this.getContentPane(),"card1");
         if (arg0.getSource() == myStrangerButton1)
@@ -194,4 +250,27 @@ public FriendList(String name,String allFriend){
 //        this.friendLabel[Integer.valueOf(newonlineFriend)].setEnabled(true);
       }
 
+      //实现 WindListener 接口中的7个抽象方法
+      public void windowClosing(WindowEvent arge) {
+          System.out.println(name + "准备关闭客户端...");
+          //向服务署发送关闭客户编消息
+          Message mess = new Message();
+          mess.setSender(name);
+          mess.setReceiver("Server");
+          mess.setMessageType(MessageType.USER_EXIT_SERVER_THREAD_CLOSE);
+          ObjectOutputStream oos;
+          try {
+              oos = new ObjectOutputStream(YychatClientConnection.s.getOutputStream());
+              oos.writeObject(mess);//向服务器发送消息}catch(I0Exception e){
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+          System.exit(0);//关闭客户端
+      }
+    public void windowActivated(WindowEvent arg0){}
+    public void windowClosed(WindowEvent arg0){}
+    public void windowDeactivated(WindowEvent arg0){}
+    public void windowDeiconified(WindowEvent arg0){}
+    public void windowIconified(WindowEvent arg0) {}
+    public void windowOpened(WindowEvent arg0){}
 }

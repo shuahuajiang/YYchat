@@ -57,7 +57,8 @@ public class FriendChat extends JFrame implements ActionListener {
 
     //在 Friendchat 中增加 append()方法
     public  void append(Message mess){
-        jta.append(mess.getSender()+"对你说" + mess.getContent()+ "\r\n");
+//        jta.append(mess.getSender()+"对你说" + mess.getContent()+ "\r\n");
+        jta.append(mess.getSendTime().toString()+"\r\n" + mess.getSender()+"对你说" + mess.getContent()+ "\r\n");
     }
 
     public void actionPerformed(ActionEvent e){

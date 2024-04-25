@@ -3,7 +3,8 @@ import java.io.*;
 import java.net.*;
 import com.yychat.model.*;
 import com.yychat.view.*;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+
+import javax.swing.JOptionPane;
 
 public class ClientReceiverThread extends Thread{
     Socket s;
@@ -16,6 +17,31 @@ public class ClientReceiverThread extends Thread{
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
                 //阻塞式编程，没有读到信息(服务器没有发送)，就一直等待
                 Message mess = (Message) ois.readObject();
+
+                //客户端处理用户退出的代码
+                if (mess.getMessageType().equals(MessageType.USER_EXIT_CLIENT_THREAD_CLOSE)){
+                    System.out.println("关闭"+ mess.getSender() + "用户接收线程");
+                    s.close();
+                    break;
+                }
+
+                //添加新好友的3个if语句
+                if (mess.getMessageType().equals(MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER)){
+                    JOptionPane.showMessageDialog(null,"新好友名字不存在，添加失败");
+                }
+                if (mess.getMessageType().equals(MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND)){
+                    JOptionPane.showMessageDialog(null,"已经是好友，添加失败");
+                }
+                if (mess.getMessageType().equals(MessageType.ADD_NEW_FRIEND_SUCCESS)){
+                    JOptionPane.showMessageDialog(null,"添加成功");
+                    String sender = mess.getSender();
+                    FriendList fl = (FriendList) ClientLogin.hmFriendList.get(sender);
+
+                    String allFriend = mess.getContent();
+                    fl.showAllFriend(allFriend);
+                }
+
+
                 if (mess.getMessageType().equals(MessageType.COMMON_CHAT_MESSAGE)){
                     String receiver = mess.getReceiver();
                     String sender = mess.getSender();

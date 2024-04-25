@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-import com.sun.xml.internal.ws.resources.SenderMessages;
 import com.yychat.model.Message;
 import com.yychat.model.MessageType;
 
@@ -20,12 +19,51 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
     public void run(){
         while (true){
             try {
+                System.out.println("服务器正在运行中。。。");
                 //创建对象输入流
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
-                Message mess = (Message) ois.readObject();
+                Message mess = (Message) ois.readObject();  //接收Message对象
+
+                //在服务器端处理用户退出的代码
+                if (mess.getMessageType().equals(MessageType.USER_EXIT_SERVER_THREAD_CLOSE)){
+                    String sender = mess.getSender();
+                    mess.setMessageType(MessageType.USER_EXIT_CLIENT_THREAD_CLOSE);
+                    sendMessage(s,mess);
+                    System.out.println(sender + "用户退出了，正在关闭其服务线程");
+                    s.close();
+                    break;
+                }
+
+                //在服务器端添加处理请求添加新好友信息代码
+                if (mess.getMessageType().equals(MessageType.ADD_NEW_FRIEND)){
+                    String sender = mess.getSender();
+                    String newFriend = mess.getContent();
+
+                //首先查询新好友在user表中是否存在
+                if (DBUtil.seekUser(newFriend)) {  //新好友在 user 表中存在
+                    // 然后，在userrelation 表中查询新好友是不是已经是好友了
+                    if (DBUtil.seekFriend(sender, newFriend, 1)) { //已经是好友了，不能承复添加,1是好友，0是陌生人
+
+                        mess.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND);//设置添加新好友失败消息类型
+                    } else {  //还不是好友，可以添加
+                        DBUtil.insertIntoFriend(sender, newFriend, 1);// userrelation 插入好友记录
+                        String allFriend = DBUtil.seekAllFriend(sender, 1);  //返网sender 的全部好友
+                        mess.setContent(allFriend);  //全部好友保存在content 字段
+                        mess.setMessageType(MessageType.ADD_NEW_FRIEND_SUCCESS);//设置添加新好友成功消息类型
+                    }
+                } else {
+                    mess.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER);
+                }
+                Socket ss = (Socket) YychatServer.hmSockes.get(sender);
+                sendMessage(ss, mess);  //发送消息到客户端
+            }
+
+                //保存聊天信息到message表
                 if (mess.getMessageType().equals(MessageType.COMMON_CHAT_MESSAGE)){
                     System.out.println(mess.getSender() + "对" + mess.getReceiver()
                     + "说：" + mess.getContent());
+                    mess.setSendTime(new java.util.Date());
+                    DBUtil.saveMessage(mess);
 
 //                  从 hmsocket 中拿到接收方的 socket 对象，然后转发聊天信息
                     String receiver = mess.getReceiver();
