@@ -1,6 +1,8 @@
 package com.yychat.view;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +10,7 @@ import java.awt.event.ActionListener;
 import com.sun.xml.internal.ws.resources.SenderMessages;
 import com.yychat.control.YychatClientConnection;
 import com.yychat.model.User;
+
 
 import com.yychat.model.Message;
 import com.yychat.model.MessageType;
@@ -43,38 +46,52 @@ public class ClientLogin extends JFrame implements ActionListener {
         this.add(jl, "North");  //标签组件添加到窗体北部
 
         //创建登录界面中间部分组件
-        jl1 = new JLabel("YY号码", JLabel.CENTER);
-        jl2 = new JLabel("YY密码", JLabel.CENTER);
+        jl1 = new JLabel("YY账号：", JLabel.RIGHT);
+        jl1.setForeground(Color.GRAY);
+        jl2 = new JLabel("YY密码：", JLabel.RIGHT);
+        jl2.setForeground(Color.GRAY);
         jl3 = new JLabel("忘记密码", JLabel.CENTER);
         jl3.setForeground(Color.BLUE); //设置字体颜色
-        jl4 = new JLabel("申请密码保护", JLabel.CENTER);
+        jl4 = new JLabel("申请密码保护", JLabel.LEFT);
+        jl4.setForeground(Color.GRAY);
         jb4 = new JButton(new ImageIcon("images/clear.gif"));
-        jtf = new JTextField();
-        jpf = new JPasswordField();
+
+        //透明文本框加下划线
+        jtf = new CustomTextField();
+        jpf = new CustomTextField1();
+
         jc1 = new JCheckBox("隐身登录");
+        jc1.setHorizontalAlignment(SwingConstants.RIGHT);
+        jc1.setForeground(Color.GRAY);
+        jc1.setBackground(Color.white);
         jc2 = new JCheckBox("记住密码");
+        jc2.setHorizontalAlignment(SwingConstants.CENTER);
+        jc2.setForeground(Color.GRAY);
+        jc2.setBackground(Color.white);
+
         jp1 = new JPanel(new GridLayout(3, 3)); //网格布局
+        jp1.setBackground(Color.white);  //设置背景颜色
+
 
         jp1.add(jl1);
         jp1.add(jtf);
-        jp1.add(jb4); //在面板添加9个组件
+//        jp1.add(jb4); //在面板添加9个组件
+        jp1.add(new JLabel()); //空组件
         jp1.add(jl2);
         jp1.add(jpf);
-        jp1.add(jl3);
+//        jp1.add(jl3);
+        jp1.add(new JLabel()); //空组件
         jp1.add(jc1);
         jp1.add(jc2);
         jp1.add(jl4);
 
-        jtp = new JTabbedPane(); //选项卡面板
-        jtp.add(jp1, "YY号码");
-        jp2 = new JPanel();
-        jp3 = new JPanel();
-        jtp.add(jp2, "手机号码");
-        jtp.add(jp3, "电子邮箱");
-        this.add(jtp, "Center");
+        this.add(jp1, "Center");
+
+
 
         jb1 = new JButton(new ImageIcon("images/login.gif")); //图片按钮
         jb1.addActionListener(this);  //在登录按钮上添加动作监听器
+
 
         //在注册按钮上添加动作事件的监听器对象
         jb2 = new JButton(new ImageIcon("images/register.gif"));
@@ -83,6 +100,7 @@ public class ClientLogin extends JFrame implements ActionListener {
         jb3 = new JButton(new ImageIcon("images/cancel.gif"));
 
         jp = new JPanel(); //创建面板对象
+        jp.setBackground(Color.white);
         jp.add(jb1); //在JPanel面板中添加按钮
         jp.add(jb2); //默认FlowLayout流式布局
         jp.add(jb3);
@@ -93,7 +111,7 @@ public class ClientLogin extends JFrame implements ActionListener {
 
 //        this.setBounds(800,600,350,250);  //设置窗体边界（位置和大小）
         this.setLocationRelativeTo(null);
-        this.setSize(350, 250); //窗体大小
+        this.setSize(430, 370); //窗体大小
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //点击窗体关闭按钮
         this.setTitle("YY聊天");
         this.setVisible(true); //窗体可视
@@ -172,4 +190,46 @@ public class ClientLogin extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }
+
+
+  //透明文本框加下划线
+   public class CustomTextField extends JTextField {
+        public CustomTextField() {
+            setOpaque(false); // 让文本框透明
+            setBorder(new EmptyBorder(0, 0, 1, 0)); // 设置下边框
+        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            // 绘制父类的外观
+            super.paintComponent(g);
+
+            // 获取文本框的尺寸
+            int width = getWidth();
+            int height = getHeight();
+
+            // 绘制下划线
+            g.setColor(Color.lightGray); // 设置下划线颜色
+            g.drawLine(0, height - 1, width, height - 1); // 绘制线条
+        }
     }
+
+   public class CustomTextField1 extends JPasswordField {
+        public CustomTextField1() {
+            setOpaque(false); // 让文本框透明
+            setBorder(new EmptyBorder(0, 0, 1, 0)); // 设置下边框
+        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            // 绘制父类的外观
+            super.paintComponent(g);
+
+            // 获取文本框的尺寸
+            int width = getWidth();
+            int height = getHeight();
+
+            // 绘制下划线
+            g.setColor(Color.lightGray); // 设置下划线颜色
+            g.drawLine(0, height - 1, width, height - 1); // 绘制线条
+        }
+    }
+}
