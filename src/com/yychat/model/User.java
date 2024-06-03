@@ -7,6 +7,17 @@ public class User implements Serializable {   //必须实现 Serializable 接口
     String password;
     String userType;
 
+    String ForgetPassword;
+
+
+    public String getForgetPassword() {
+        return ForgetPassword;
+    }
+
+    public void setForgetPassword(String forgetPassword) {
+        ForgetPassword = forgetPassword;
+    }
+
     public String getUserType(){
         return userType;
     }
