@@ -11,6 +11,9 @@ public class Message implements Serializable,MessageType{
     String receiver;
     String content;
 
+    String chatName;
+    String chatNumber;
+
     //保存聊天信息
     Date sendTime;
 
@@ -53,5 +56,19 @@ public class Message implements Serializable,MessageType{
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getChatNumber() {
+        return this.chatNumber;
+    }
+    public void setChatNumber(String chatNumber) {
+        this.chatNumber = chatNumber;
+    }
+
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
+    }
+    public String getChatName() {
+        return this.chatName;
     }
 }

@@ -1,77 +1,89 @@
 package com.yychat.view;
 
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.yychat.control.YychatClientConnection;
 import com.yychat.model.User;
 import com.yychat.model.UserType;
 
-public class ForgetPassword extends JFrame implements ActionListener{
+public class ForgetPassword extends JFrame implements ActionListener {
 
-    JLabel j1,j2,j3,j4;
+    JLabel j1, j4;
     JButton j;
-    JTextField f1,f2,f3,f4;
+    JTextField f1, f4;
 
     public ForgetPassword() {
-        j1 = new JLabel("YY号码",JLabel.CENTER);
-        j2 = new JLabel("手机号码",JLabel.CENTER);
-        j3 = new JLabel("电子邮箱",JLabel.CENTER);
-        j4 = new JLabel("新密码",JLabel.CENTER);
-        j = new JButton("修改密码");//创建面板,给修改密码按钮创建监听器
+        j1 = new JLabel("YY号码:", JLabel.RIGHT);
+        j4 = new JLabel("新密码:", JLabel.RIGHT);
+        j = new JButton("修改密码");
         j.addActionListener(this);
-        f1 = new JTextField();
-        f2 = new JTextField();//创建文本框
-        f3 = new JTextField();
-        f4 = new JTextField();
-        this.add(j1);
-        this.add(f1);
-        this.add(j2);
-        this.add(f2);
-        this.add(j3);
-        this.add(f3);
-        this.add(j4);
-        this.add(f4);
-        this.add(j);
+        f1 = new JTextField(15);
+        f4 = new JTextField(15);
 
-        this.setLayout(new GridLayout(5,3));
-        this.setSize(400,400);
-        this.setLocationRelativeTo(null);
-        this.setTitle("找回密码");
-        this.setVisible(true);
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.5; // 设置j1所在列的权重
+        panel.add(j1, constraints);
+
+        constraints.gridx = 1;
+        constraints.weightx = 0.5; // 设置f1所在列的权重
+        panel.add(f1, constraints);
+
+        constraints.gridy = 1;
+        constraints.gridx = 0;
+        constraints.weightx = 0.5; // 设置j4所在列的权重
+        panel.add(j4, constraints);
+
+        constraints.gridx = 1;
+        constraints.weightx = 0.5; // 设置f4所在列的权重
+        panel.add(f4, constraints);
+
+        constraints.gridy = 2;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(j, constraints);
+
+        add(panel);
+
+        setTitle("修改密码");
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==j) {
+        if (e.getSource() == j) {
             String username = f1.getText();
-            String phone = f2.getText();
-            String email = f3.getText();
             String newPass = f4.getText();
-            //监听该按钮,如果点击了修改密码的按钮,则将我们输入的四个信息传入user对象
-
-            User user  = new User();
+            User user = new User();
             user.setUserName(username);
-            user.setPhone(phone);
-            user.setEmail(email);
             user.setPassword(newPass);
-
             user.setUserType(UserType.FORGET_PASSWORD);
-            if(new YychatClientConnection().ForgetPassword(user)) {
-                //调用客户端forgetpassword方法
-                JOptionPane.showMessageDialog(this, username+"找回密码成功!");
-            }else {
-                JOptionPane.showMessageDialog(this, username+"找回密码失败!");
+            if (new YychatClientConnection().ForgetPassword(user)) {
+                JOptionPane.showMessageDialog(this, username + "修改密码成功!");
+            } else {
+                JOptionPane.showMessageDialog(this, username + "修改密码失败!");
             }
         }
+    }
+
+    public static void main(String[] args) {
+        new ForgetPassword();
     }
 }

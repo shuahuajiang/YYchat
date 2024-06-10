@@ -8,6 +8,7 @@ import com.yychat.model.MessageType;
 
 import java.io.ObjectOutputStream;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -24,11 +25,14 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
                 Message mess = (Message) ois.readObject();  //接收Message对象
 
+
+
                 //在服务器端处理用户退出的代码
                 if (mess.getMessageType().equals(MessageType.USER_EXIT_SERVER_THREAD_CLOSE)){
                     String sender = mess.getSender();
                     mess.setMessageType(MessageType.USER_EXIT_CLIENT_THREAD_CLOSE);
                     sendMessage(s,mess);
+                    YychatServer.hmSocket.remove(sender);
                     System.out.println(sender + "用户退出了，正在关闭其服务线程");
                     s.close();
                     break;
@@ -57,6 +61,88 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
                 Socket ss = (Socket) YychatServer.hmSockes.get(sender);
                 sendMessage(ss, mess);  //发送消息到客户端
             }
+
+
+                //删除好友
+                if(mess.getMessageType().equals(MessageType.DELETE_FRIEND)) {
+                    String sender=mess.getSender();
+                    String newFriend=mess.getContent();
+                    //首先查询新好友在user表是否存在
+                    if(DBUtil.seekUser(newFriend)) {
+                        //在userrelation表中查询是不是好友
+                        if(DBUtil.seekFriend(sender,newFriend,1)) {
+                            DBUtil.deleteIntoFriend(newFriend);
+                            String allFriend=DBUtil.seekAllFriend(sender,1);
+                            mess.setContent(allFriend);
+                            mess.setMessageType(MessageType.DELETE_FRIEND_SUCCESS);
+                        }else {
+
+                            mess.setMessageType(MessageType.DELETE_FRIEND_FAILURE_ALREADY_FRIEND);
+                        }
+                    }else {
+                        mess.setMessageType(MessageType.DELETE_FRIEND_FAILURE_NO_USER);
+                    }
+                    Socket ss=(Socket)YychatServer.hmSockes.get(sender);
+                    sendMessage(ss,mess); //发送信息到客户端
+                }
+
+
+//                创建群聊
+                if (mess.getMessageType().equals(MessageType.CREATE_MULTI_PERSON_CHAT)) {
+                    if (DBUtil.seekChatsName(mess.getChatName()) || DBUtil.seekChatsNumber(mess.getChatNumber())) {
+                        mess.setMessageType(MessageType.CREATE_MULTI_PERSON_CHAT_FAILURE);
+                    } else {
+                        DBUtil.insertIntoChats(mess.getChatName(), mess.getChatNumber());
+                        DBUtil.inserIntouserChats(mess.getSender(),mess.getChatName());
+                        DBUtil.createChatsTable(mess.getChatName(), mess.getChatNumber());
+                        DBUtil.joinChats(mess.getChatName(),mess.getSender());
+                        mess.setMessageType(MessageType.CREATE_MULTI_PERSON_CHAT_SUCCESS);
+                    }
+                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                    oos.writeObject(mess);
+                }
+
+
+//                加入群聊
+                if(mess.getMessageType().equals(MessageType.JOIN_MULTI_PERSON_CHAT)){
+                    if(DBUtil.seekChats(mess.getChatName())) {
+                        if (DBUtil.seekChatsUser(mess.getChatName(), mess.getSender())) {
+                            mess.setMessageType(MessageType.JOIN_MULTI_PERSON_CHAT_FAILURE);
+                        } else {
+                            DBUtil.joinChats(mess.getChatName(), mess.getSender());
+                            DBUtil.inserIntouserChats(mess.getSender(), mess.getChatName());
+                            mess.setMessageType(MessageType.JOIN_MULTI_PERSON_CHAT_SUCCESS);
+                            mess.setChatName(DBUtil.seekJoinChats(mess.getSender()));
+                        }
+                    }else
+                        mess.setMessageType(MessageType.MULTI_PERSON_CHAT_NOT_EXITS);
+                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                    oos.writeObject(mess);
+                }
+
+//                群聊发送消息
+                if(mess.getMessageType().equals(MessageType.SEND_TO_MULTI_PERSON_CHAT_CLIENT)){
+                    String chatsMember = DBUtil.seekChatsMember(mess.getChatName());
+                    System.out.println("Chat members: " + chatsMember);
+                    mess.setReceiver(chatsMember);
+                    mess.setMessageType(MessageType.RECEIVER_FROM_MULTI_PERSON_CHAT_SERVER);
+                    String[] member = chatsMember.split(" ");
+                    System.out.println("member length: " + member.length);
+                    for (int i = 1; i < member.length; i++) {
+                        Socket ss =(Socket) YychatServer.hmSockes.get(member[i]);
+                        if( ss != null){
+                            try {
+                                ObjectOutputStream oos = new ObjectOutputStream(ss.getOutputStream());
+                                oos.writeObject(mess);
+                                System.out.println("Message sent to: " + member[i]);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.out.println("No socket found for member: " + member[i]);
+                        }
+                    }
+                }
 
                 //保存聊天信息到message表
                 if (mess.getMessageType().equals(MessageType.COMMON_CHAT_MESSAGE)){
@@ -103,10 +189,11 @@ public class ServerReceiverThread extends Thread{   //在服务器ServerReceiver
                     }
                 }
             } catch (ClassNotFoundException | IOException e ){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
+
     //增加 sendMessage 方法
     public void sendMessage (Socket s,Message mess){
         ObjectOutputStream oos;

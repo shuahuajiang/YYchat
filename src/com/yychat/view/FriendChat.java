@@ -8,6 +8,9 @@ import java.awt.event.ActionListener;
 import com.yychat.model.Message;
 import com.yychat.model.MessageType;
 import com.yychat.control.YychatClientConnection;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.OutputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
@@ -21,8 +24,6 @@ public class FriendChat extends JFrame implements ActionListener {
     String sender;
     String receiver;
 
-
-
     public FriendChat(String sender,String receiver){
         this.sender = sender;
         this.receiver = receiver;
@@ -35,6 +36,7 @@ public class FriendChat extends JFrame implements ActionListener {
         jtf = new JTextField(15);  //单行文本框
         jb = new JButton("发送");
         jb.addActionListener(this);
+
         jb.setForeground(Color.blue);
         JPanel jp = new JPanel();
         jp.add(jtf); jp.add(jb);
@@ -70,7 +72,6 @@ public class FriendChat extends JFrame implements ActionListener {
             mess.setReceiver(receiver);
             mess.setContent(jtf.getText());
             mess.setMessageType(MessageType.COMMON_CHAT_MESSAGE);  //设置聊天信息的类型
-
             try {
                 OutputStream os = YychatClientConnection.s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -80,5 +81,4 @@ public class FriendChat extends JFrame implements ActionListener {
             }
         }
     }
-
 }

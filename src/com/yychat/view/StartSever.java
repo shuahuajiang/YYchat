@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import com.yychat.control.YychatServer;
 
@@ -31,7 +32,10 @@ public class StartSever extends JFrame implements ActionListener {
     }
     public void actionPerformed(ActionEvent arg0){
         if (arg0.getSource() == jb1)
-            new YychatServer();
+            try {
+                new YychatServer();//，创建服务器对象，启动服务器
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
     }
-
 }

@@ -1,4 +1,6 @@
 package com.yychat.control;
+
+import com.yychat.model.Message;
 import java.io.*;
 import java.net.*;
 import com.yychat.model.*;
@@ -41,6 +43,54 @@ public class ClientReceiverThread extends Thread{
                     fl.showAllFriend(allFriend);
                 }
 
+// 添加删除好友的语句
+                if(mess.getMessageType().equals(MessageType.DELETE_FRIEND_FAILURE_NO_USER)) {
+                    JOptionPane.showMessageDialog(null, "用户名字不存在，删除好友失败！");
+                }
+                if(mess.getMessageType().equals(MessageType.DELETE_FRIEND_FAILURE_ALREADY_FRIEND)){
+                    JOptionPane.showMessageDialog(null, "该用户已经删除，不能重复删除！");
+                }
+                if(mess.getMessageType().equals(MessageType.DELETE_FRIEND_SUCCESS)){
+                    JOptionPane.showMessageDialog(null, "删除好友成功！");
+                    String sender=mess.getSender();
+                    FriendList fl=(FriendList)ClientLogin.hmFriendList.get(sender);//拿到发送 者好友列表界面
+                    String allFriend=mess.getContent();
+                    fl.showAllFriend(allFriend);//调用方法更新好友列表
+                }
+
+                //发起群聊
+                if(mess.getMessageType().equals(MessageType.CREATE_MULTI_PERSON_CHAT_SUCCESS)){
+                    JOptionPane.showMessageDialog(null,"创建群聊成功！");
+                }
+                if(mess.getMessageType().equals(MessageType.CREATE_MULTI_PERSON_CHAT_FAILURE)){
+                    JOptionPane.showMessageDialog(null,"创建群聊失败，群聊名称或号码重复！");
+                }
+
+                if(mess.getMessageType().equals(MessageType.JOIN_MULTI_PERSON_CHAT_SUCCESS)){
+                    JOptionPane.showMessageDialog(null,"加入群聊成功！");
+                    String chats = mess.getChatName();
+                    FriendList fl = (FriendList) ClientLogin.hmFriendList.get(mess.getSender());
+                    fl.showChats(chats);
+                }
+                if(mess.getMessageType().equals(MessageType.JOIN_MULTI_PERSON_CHAT_FAILURE)){
+                    JOptionPane.showMessageDialog(null,"已加入该群聊！");
+                }
+                if(mess.getMessageType().equals(MessageType.MULTI_PERSON_CHAT_NOT_EXITS)){
+                    JOptionPane.showMessageDialog(null,"该群聊不存在！");
+                }
+
+                if(mess.getMessageType().equals(MessageType.RECEIVER_FROM_MULTI_PERSON_CHAT_SERVER)){
+                    String receiver = mess.getReceiver();
+                    System.out.println("Receiver string: " );
+                    String[] r = receiver.split(" ");
+                    for (int i = 1; i < r.length; i++) {
+                        MultiPersonChat mpc = (MultiPersonChat)FriendList.hmMultiPersonChat.get(r[i]+"from"+mess.getChatName());
+                        if(mpc != null){
+                            mpc.append(mess);
+                        }
+                    }
+                }
+
 
                 if (mess.getMessageType().equals(MessageType.COMMON_CHAT_MESSAGE)){
                     String receiver = mess.getReceiver();
@@ -67,9 +117,9 @@ public class ClientReceiverThread extends Thread{
                 }
 
             } catch (IOException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             } catch (ClassNotFoundException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
